@@ -2,6 +2,9 @@ import { Firebot } from "@crowbartools/firebot-custom-scripts-types";
 import { initLogger } from "./logger";
 import { initOSC, stopOSC } from "./firebot/osc-manager";
 import { ApplyOscEffect } from "./firebot/effects/apply-osc";
+import { ReceivedOscEvent } from "./firebot/events/osc-event-source";
+import { OSCNameVariable } from "./firebot/variables/osc-name-variable";
+import { OSCValueVariable } from "./firebot/variables/osc-value-variable";
 
 interface Params {
   receiverIpAddress: string;
@@ -47,7 +50,9 @@ const script: Firebot.CustomScript<Params> = {
   run: (runRequest) => {
     const {
       logger,
-      effectManager
+      effectManager,
+      eventManager,
+      replaceVariableManager
     } = runRequest.modules;
 
     logger.info("Starting OSC server!");
@@ -58,11 +63,13 @@ const script: Firebot.CustomScript<Params> = {
       receiverIpAddress: runRequest.parameters.receiverIpAddress,
       receiverPort: runRequest.parameters.receiverPort,
       senderIpAddress: runRequest.parameters.senderIpAddress,
-      senderPort: runRequest.parameters.senderPort
+      senderPort: runRequest.parameters.senderPort,
+      em: eventManager
     });
     effectManager.registerEffect(ApplyOscEffect);
-
-
+    eventManager.registerEventSource(ReceivedOscEvent);
+    replaceVariableManager.registerReplaceVariable(OSCNameVariable);
+    replaceVariableManager.registerReplaceVariable(OSCValueVariable);
   },
   parametersUpdated: (parameters) => {
     initOSC({
