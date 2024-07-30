@@ -2,7 +2,7 @@ import { EventSource } from "@crowbartools/firebot-custom-scripts-types/types/mo
 
 export const ReceivedOscEvent: EventSource = {
     id: "osc",
-    name: "Received OSC",
+    name: "OSC",
     events: [
         {
             id: "received-osc",
