@@ -3,17 +3,24 @@ import { logger } from "../logger";
 export let udpClient: any;
 export let oscParams = {};
 
+const oscTypes: { [key: string]: string } = {
+  "float32": "f",
+  "int32": "i",
+  "OSC-string": "s",
+  "OSC-blob": "b"
+};
+
 let sIp: string, sPort: number;
 
 const osc = require('osc');
 
-export async function sendOSC(name: any, value: any) {
+export async function sendOSC({ name, value, mtype }: { name: string, value: string, mtype: string }) {
   logger.info("Setting " + name + " to " + value + " at " + sIp + ":" + sPort);
   udpClient.send({
     address: name,
     args: [
       {
-        type: "f",
+        type: oscTypes[mtype],
         value: value
       }
     ]
